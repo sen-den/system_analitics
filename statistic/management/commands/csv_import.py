@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import re
 from typing import List, Type, Optional
 
 from django.db import models, transaction
@@ -116,7 +117,7 @@ class Command(BaseCommand):
 
     @classmethod
     def __get_grade_by_speciality_name(cls, name: str):
-        if '(МАГ)' in name:
+        if 'МАГ' in name:
             return GRADE_CHOICES.Master
         else:
             return GRADE_CHOICES.Bachelor
@@ -127,6 +128,6 @@ class Command(BaseCommand):
 
     @classmethod
     def _process_speciality(cls, name: str, faculty: Faculty) -> Optional[Speciality]:
-        name = name.replace(' (МАГ)', '')
+        name = re.sub(r'МАГ\d+', '', name)
         speciality = cls.__get_or_create(Speciality, name=name, faculty=faculty)
         return speciality
